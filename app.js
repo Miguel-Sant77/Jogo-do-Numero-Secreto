@@ -1,33 +1,75 @@
-alert('Boas Vindas ao jogo do numero secreto!');
-let numeroMaximo = 500;
-let numeroSecreto = parseInt(Math.random() * numeroMaximo + 1);
-console.log(numeroSecreto);
-let chute;
+let listaDeNumerosSorteados =[];
+let numeroLimite = 10;
+let numeroSecreto = gerarNumeroAleatorio();
 let tentativas = 1;
 
-console.log(numeroSecreto)
-// Adicione um console.log para verificar a comparação entre "chute" e "numeroSecreto"
-console.log('Resultado da comparação:', chute == numeroSecreto);
+
+function exibirTextoNaTela(tag, texto){
+
+    let campo = document.querySelector(tag);
+    campo.innerHTML = texto;
+    responsiveVoice.speak(texto, 'Brazilian Portuguese Female',
+        {rate:1.2});
+}
+function exibirMensagemInicial(){
+    exibirTextoNaTela('h1', 'Jogo do numero Secreto');
+    exibirTextoNaTela('p', 'Escolha um numero entre 1 e 100');
+
+}
+
+exibirMensagemInicial();
 
 
-//enquanto chute n for igual ao numero segreto
-while (chute != numeroSecreto) {
-    chute =  prompt(`Escolha um número entre 1 e ${numeroMaximo}: `);
 
-    // se o chute for igual que o numero secreto
-    if (numeroSecreto == chute) {
-        break;
-    } else {
 
-        if (chute < numeroSecreto) {
-            alert(`O número secreto é maior que ${chute}`);
-        } else{
-        alert(`O número secreto é menor que ${chute}`);
-        }
-        //tentativas = tentativas + 1;
-        tentativas ++;
+function verificarChute() {
+    let chute = document.querySelector('input').value;
     
+    if (chute == numeroSecreto) {
+        exibirTextoNaTela('h1', 'Acertou!');
+        let palavraTentativa = tentativas > 1 ? 'tentativas' : 'tentativa';
+        let mensagemTentativas = `Você descobriu o número secreto com ${tentativas} ${palavraTentativa}!`;
+                exibirTextoNaTela('p', mensagemTentativas);
+                document.getElementById('reiniciar').removeAttribute('disabled');
+        } else {
+                if (chute > numeroSecreto) {
+                        exibirTextoNaTela('p', 'O número secreto é menor');
+                } else {
+                        exibirTextoNaTela('p', 'O número secreto é maior');
+                }
+                tentativas++;
+                limparCampo();
+        }
 }
+
+
+function gerarNumeroAleatorio(){
+    let numerooEscolhido = parseInt(Math.random() * 10 + 1);
+    let quantidadeDeElementosNaLista = listaDeNumerosSorteados.length;
+
+    if (quantidadeDeElementosNaLista == 10) {
+        listaDeNumerosSorteados = [];
+    }
+    if (listaDeNumerosSorteados.includes(numerooEscolhido)){
+        return gerarNumeroAleatorio();
+
+
+    }else {
+        listaDeNumerosSorteados.push(numerooEscolhido);
+        console.log(listaDeNumerosSorteados);
+        return numerooEscolhido;
+    }
 }
-let palavraTentativa = tentativas > 1 ? 'tentativas' : 'tentativa';
-alert(`Isso aí! Você acertou o número secreto! ${numeroSecreto} com ${tentativas} ${palavraTentativa}`);
+function limparCampo(){
+    chute = document.querySelector('input');
+    chute.value = '';
+}
+
+function reiniciarJogo(){
+    numeroSecreto = gerarNumeroAleatorio();
+    limparCampo();
+    tentativas = 1;
+    exibirMensagemInicial();
+    document.getElementById('reiniciar').setAttribute('disabled', true)
+}
+
